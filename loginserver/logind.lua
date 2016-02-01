@@ -3,10 +3,10 @@ local crypt = require "crypt"
 local skynet = require "skynet"
 
 local server = {
-	host = "127.0.0.1",
-	port = 8001,
-	multilogin = false,	-- disallow multilogin
-	name = "login_master",
+    host = "0.0.0.0",
+    port = skynet.getenv("server_port"),
+    multilogin = false, -- disallow multilogin
+    name = "login_master",
 }
 
 local server_list = {}

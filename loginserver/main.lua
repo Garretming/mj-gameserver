@@ -4,6 +4,14 @@ skynet.start(function()
     if debug_port ~= nil then
         skynet.newservice("debug_console",debug_port)
     end
-    skynet.uniqueservice("logind")
+
+    local loginserver = skynet.newservice("logind")
+    local gate = skynet.newservice("gated", loginserver)
+
+    skynet.call(gate, "lua", "open" , {
+        port = 8888,
+        maxclient = 64,
+        servername = "sample",
+    })
 
 end)
