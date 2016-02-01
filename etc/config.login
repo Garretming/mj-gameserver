@@ -26,5 +26,6 @@ luaservice = skynetroot.."service/?.lua;"..
 			 skynetroot.."../loginserver/?.lua;"
 
 
+cluster = "./etc/clustername.lua"
 server_port = 7777
 debug_port = 7000

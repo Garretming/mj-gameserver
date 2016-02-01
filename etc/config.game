@@ -29,5 +29,7 @@ luaservice = skynetroot.."service/?.lua;"..
              "./gameserver/?.lua;"
 
 preload = "./preload/preload.lua"
+
+cluster = "./etc/clustername.lua"
 server_port = 8888
 debug_port = 8000
