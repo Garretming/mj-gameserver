@@ -1,5 +1,5 @@
---skynetroot = "./skynet/"
-skynetroot = "./skynet-mingw/"
+skynetroot = "./skynet/"
+--skynetroot = "./skynet-mingw/"
 
 thread = 8
 logpath = "."
@@ -29,3 +29,4 @@ luaservice = skynetroot.."service/?.lua;"..
 cluster = "./etc/clustername.lua"
 server_port = 7777
 debug_port = 7000
+nodename = "login"

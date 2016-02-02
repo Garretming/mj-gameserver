@@ -1,6 +1,7 @@
 local login = require "snax.loginserver"
 local crypt = require "crypt"
 local skynet = require "skynet"
+local cluster = require "cluster"
 
 local server = {
     host = "0.0.0.0",
@@ -29,13 +30,15 @@ function server.login_handler(server, uid, secret)
 	-- only one can login, because disallow multilogin
 	local last = user_online[uid]
 	if last then
-		skynet.call(last.address, "lua", "kick", uid, last.subid)
+		cluster.call(server,gameserver,"kick",uid,last.subid)
+--		skynet.call(last.address, "lua", "kick", uid, last.subid)
 	end
 	if user_online[uid] then
 		error(string.format("user %s is already online", uid))
 	end
 
-	local subid = tostring(skynet.call(gameserver, "lua", "login", uid, secret))
+--	local subid = tostring(skynet.call(gameserver, "lua", "login", uid, secret))
+	local subid = tostring(cluster.call(server,gameserver, "login", uid, secret))
 	user_online[uid] = { address = gameserver, subid = subid , server = server}
 	return subid
 end

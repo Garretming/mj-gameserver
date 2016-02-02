@@ -1,4 +1,5 @@
 local skynet = require "skynet"
+local cluster = require "cluster"
 
 skynet.start(function()
     local debug_port = skynet.getenv("debug_port")
@@ -15,4 +16,7 @@ skynet.start(function()
     
     skynet.logInfo("Watchdog listen on ", skynet.getenv("server_port"))
 
+    cluster.open(skynet.getenv("nodename"))
+
+    skynet.newservice("gameserver")
 end)

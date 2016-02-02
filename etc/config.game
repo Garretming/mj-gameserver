@@ -1,5 +1,5 @@
---skynetroot = "./skynet/"
-skynetroot = "./skynet-mingw/"
+skynetroot = "./skynet/"
+--skynetroot = "./skynet-mingw/"
 
 thread = 8
 logpath = "."
@@ -33,3 +33,4 @@ preload = "./preload/preload.lua"
 cluster = "./etc/clustername.lua"
 server_port = 8888
 debug_port = 8000
+nodename = "game"

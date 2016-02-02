@@ -7,7 +7,7 @@ function __log( address,msg )
     print(msg)
     if logfile ~= nil then
         logfile:write(msg)
-	    logfile:write("\n")
+        logfile:write("\n")
         logfile:flush()
     end
 end
@@ -29,20 +29,24 @@ function CMD.exit( ... )
 end
 
 skynet.register_protocol {
-	name = "text",
-	id = skynet.PTYPE_TEXT,
-	unpack = skynet.tostring,
-	dispatch = function(_, address, msg)
+    name = "text",
+    id = skynet.PTYPE_TEXT,
+    unpack = skynet.tostring,
+    dispatch = function(_, address, msg)
         __log(address,msg)
-	end
+    end
 }
 
 skynet.start(function()
-	skynet.register ".logger"
-	local filename = os.date("%Y-%m-%d-%H:%M.log",os.time())
-    logfile = io.open(filename,"w+") 
+    skynet.register ".logger"
+    local filename = os.date("%Y-%m-%d-%H:%M.log",os.time())
+    if skynet.getenv("nodename") ~= nil then
+        filename = "["..skynet.getenv("nodename").."]"..filename
+    end
+    os.execute("mkdir log")
+    logfile = io.open("log/"..filename,"w+") 
     if logfile == nil then
-	   print("can not open log file",filename)
+       print("can not open log file",filename)
 end
     skynet.dispatch("lua", function(session, address,command, msg)
         local f = CMD[command]
