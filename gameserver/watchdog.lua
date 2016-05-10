@@ -1,27 +1,29 @@
 local skynet = require "skynet"
+local socket = require "socket"
 
 local CMD = {}
 local SOCKET = {}
 local gate
 local agent = {}
-
-function SOCKET.open(fd, addr)
-	skynet.error("New client from : " .. addr)
-	local agent_mgr = skynet.uniqueservice("agent_mgr")
-	agent[fd] = skynet.call(agent_mgr,"lua","fetch")
-	skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self() })
-
-end
+local checking = {}
+local gamed
 
 local function close_agent(fd)
-	local a = agent[fd]
-	agent[fd] = nil
-	if a then
-		skynet.call(gate, "lua", "kick", fd)
-		-- disconnect never return
-		skynet.send(a, "lua", "disconnect")
-	end
+    local a = agent[fd]
+    agent[fd] = nil
+    if a then
+        skynet.call(gate, "lua", "kick", fd)
+        -- disconnect never return
+        skynet.send(a, "lua", "disconnect")
+    end
 end
+
+function SOCKET.open(fd, addr)
+	print("New client from : " .. addr,fd)
+	skynet.call(gate,"lua","accept",fd)
+	checking[fd] = true
+end
+
 
 function SOCKET.close(fd)
 	skynet.logInfo("socket close",fd)
@@ -39,12 +41,28 @@ function SOCKET.warning(fd, size)
 end
 
 function SOCKET.data(fd, msg)
+	if checking[fd] == true then
+		print("msg",msg,#msg)
+		local ret,uid = skynet.call(gamed,"lua","auth",msg)
+	    if ret == "200" then
+	        local agent_pool = skynet.uniqueservice("agent_pool")
+	        agent[fd] = skynet.call(agent_pool,"lua","fetch")
+	        skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self() })
+	        skynet.call(gamed,"lua","start",uid,fd)
+	    end
+		checking[fd] = nil
+
+		socket.write(fd,ret..'\n')
+
+	end
 end
 
 function CMD.start(conf)
+	gamed = conf.gamed
 	skynet.call(gate, "lua", "open" , conf)
-end
 
+	skynet.call(gamed,"lua","start",skynet.self())
+end
 function CMD.close(fd)
 	close_agent(fd)
 end

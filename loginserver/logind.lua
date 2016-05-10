@@ -49,7 +49,7 @@ function CMD.register_gate(server, address)
 	server_list[server] = address
 end
 
-function CMD.logout(uid, subid)
+function CMD.logout(uid)
 	local u = user_online[uid]
 	if u then
 		print(string.format("%s@%s is logout", uid, u.server))

@@ -7,16 +7,18 @@ skynet.start(function()
         skynet.newservice("debug_console",debug_port)
     end
 
+    cluster.open(skynet.getenv("nodename"))
+
+    local gamed = skynet.newservice("gamed")
+
     local watchdog = skynet.newservice("watchdog")
     skynet.call(watchdog, "lua", "start", {
         port = skynet.getenv("server_port"),
         maxclient = max_client,
         nodelay = true,
+        gamed = gamed
     })
     
     skynet.logInfo("Watchdog listen on ", skynet.getenv("server_port"))
 
-    cluster.open(skynet.getenv("nodename"))
-
-    skynet.newservice("gameserver")
 end)

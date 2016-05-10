@@ -9,12 +9,6 @@ skynet.start(function()
 
     local logind = skynet.newservice("logind")
     cluster.register("logind", logind)
-    -- local gate = skynet.newservice("gated", loginserver)
 
-    -- skynet.call(gate, "lua", "open" , {
-    --     port = 8888,
-    --     maxclient = 64,
-    --     servername = "sample",
-    -- })
     cluster.open(skynet.getenv("nodename"))
 end)

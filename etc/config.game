@@ -26,7 +26,8 @@ lua_cpath = skynetroot.."luaclib/?.so;"..
            
 luaservice = skynetroot.."service/?.lua;"..
              "service/?.lua;"..
-             "./gameserver/?.lua;"
+             "./gameserver/?.lua;"..
+             "./gameserver/agent/?.lua;"
 
 preload = "./preload/preload.lua"
 
