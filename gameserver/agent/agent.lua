@@ -2,6 +2,7 @@ local skynet = require "skynet"
 local netpack = require "netpack"
 local socket = require "socket"
 local pbc = require "protobuf"
+local handlerT = require "playerHandler"
 
 local CMD = {}
 local client_fd
@@ -20,9 +21,6 @@ function core:send( name,t )
     local package = string.pack(">s2", buf)
     local ret = socket.write(client_fd, package)
     sendByte = sendByte + #package
- 
-        print("core:send",name,sendByte,ret)
-
 end
 function core:heartbeat( ... )
     netActive = os.time()
@@ -37,12 +35,7 @@ function load_proto( ... )
     end
 end
 
-handlerT = {}
-handlerT["heartbeat"] = function ( msg,core )
-    local heartbeat = {};
-    heartbeat.timestamp = 0
-    core:send("heartbeat", heartbeat)
-end
+
 skynet.register_protocol {
     name = "client",
     id = skynet.PTYPE_CLIENT,
