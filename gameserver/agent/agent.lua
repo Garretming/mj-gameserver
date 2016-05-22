@@ -2,6 +2,8 @@ local skynet = require "skynet"
 local netpack = require "netpack"
 local socket = require "socket"
 local pbc = require "protobuf"
+local dispatcher = require "agentDispatcher"
+
 
 local CMD = {}
 local client_fd
@@ -20,29 +22,11 @@ function core:send( name,t )
     local package = string.pack(">s2", buf)
     local ret = socket.write(client_fd, package)
     sendByte = sendByte + #package
- 
-        print("core:send",name,sendByte,ret)
-
 end
 function core:heartbeat( ... )
     netActive = os.time()
 end
 
-function load_proto( ... )
-    local pbTable = {
-        "proto/heartbeat.proto.pb"
-    }
-    for _,v in ipairs(pbTable) do
-        pbc.register_file(v)
-    end
-end
-
-handlerT = {}
-handlerT["heartbeat"] = function ( msg,core )
-    local heartbeat = {};
-    heartbeat.timestamp = 0
-    core:send("heartbeat", heartbeat)
-end
 skynet.register_protocol {
     name = "client",
     id = skynet.PTYPE_CLIENT,
@@ -57,10 +41,10 @@ skynet.register_protocol {
     end,
     dispatch = function (_, _, name,msg)
         local msg = pbc.decode(name,msg)
-        if not handlerT[name] then
-            skynet.error("error cannot find message handlerT",name)
-        else
-            handlerT[name](msg,core)
+        local ret = dispatcher.process(name,msg,core)
+        if not ret then
+            print("error in agentDispatcher",name)
+            skynet.exit()
         end
     end
 }
@@ -75,8 +59,6 @@ function CMD.start(conf)
     skynet.call(gate, "lua", "forward", fd)
 
     netActive = os.time()
-
-
 
 end
 function CMD.send(name,t )
@@ -93,6 +75,20 @@ skynet.start(function()
         skynet.ret(skynet.pack(f(...)))
     end)
 
-    load_proto()
+
+    --register proto
+    local pbTable = {
+        "proto/heartbeat.proto.pb",
+        "proto/ddz.proto.pb",
+        "proto/room.proto.pb"
+    }
+    for _,v in ipairs(pbTable) do
+        pbc.register_file(v)
+    end
     
+    --register handler
+    require("roomHandler")
+    require("ddz.handler")
+
+
 end)

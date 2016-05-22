@@ -1,32 +1,13 @@
 
-€
+”
 
-room.proto"
-onMemEnterRoom
+room.proto"0
+c2s_enterRoomRequest
+type (
 
-id ("
-onMemLeaveRoom
+id ("
+c2s_leaveRoomRequest"#
+s2c_enterRoomResponse
 
-id ("`
-	_roomInfo
-	studentID (
-vars (2._roomInfo._var!
-_var
-name (
-var (".
-updateVar_Request
-name (
-var ("/
-updateVar_Response
-name (
-var ("H
-event_Request
-
-id (
-var (
-clean (
-newGame (")
-event_Response
-
-id (
-var (
+id ("
+s2c_leaveRoomResponse
