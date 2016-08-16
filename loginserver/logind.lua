@@ -2,6 +2,9 @@ local login = require "snax.loginserver"
 local crypt = require "crypt"
 local skynet = require "skynet"
 local cluster = require "cluster"
+local md5 = require "md5"
+local mysql = require "mysql"
+local sqlStr = require "sqlStr"
 
 local server = {
     host = "0.0.0.0",
@@ -20,8 +23,16 @@ function server.auth_handler(token)
 	user = crypt.base64decode(user)
 	server = crypt.base64decode(server)
 	password = crypt.base64decode(password)
-	assert(password == "password", "Invalid password")
-	return server, user
+	local db = skynet.uniqueservice("db")
+	local sql = string.format(sqlStr["Query_User_Passwrod"]
+		,mysql.quote_sql_str(user))
+	local res = skynet.call(db,"lua","query",sql)
+	if type(res) == 'table' and res[1] ~= nil and 
+		res[1].password == md5.sumhexa(password) then
+		return server,user
+	else
+		return nil,nil
+	end
 end
 
 function server.login_handler(server, uid, secret)

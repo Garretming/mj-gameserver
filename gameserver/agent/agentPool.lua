@@ -23,7 +23,7 @@ function mainloop()
 end
 skynet.start(function()
     skynet.dispatch("lua", function(_,_, command, ...)
-        local f = CMD[command]
+        local f = assert(CMD[command])
         skynet.ret(skynet.pack(f(...)))
     end)
     skynet.fork(mainloop)

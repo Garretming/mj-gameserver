@@ -4,12 +4,20 @@ local socket = require "socket"
 local pbc = require "protobuf"
 local dispatcher = require "agentDispatcher"
 
+local mysql = require "mysql"
+local sqlStr = require "sqlStr"
+
+
 
 local CMD = {}
 local client_fd
 --other service
 local WATCHDOG
 local DB
+local player
+local userinfo
+local dbDirty = false
+local clientDirty = false
 
 local core = {}
 local netActive = 0
@@ -26,6 +34,22 @@ end
 function core:heartbeat( ... )
     netActive = os.time()
 end
+
+
+function mainloop()
+    while(true) do
+        if dbDirty then
+            --save to db
+            dbDirty = false
+        end
+        if clientDirty then
+            --asyn to client
+            clientDirty = false
+        end
+        skynet.sleep(5)
+    end
+end
+
 
 skynet.register_protocol {
     name = "client",
@@ -49,16 +73,27 @@ skynet.register_protocol {
     end
 }
 
+
 function CMD.start(conf)
     local fd = conf.client
     client_fd = fd
     
     local gate = conf.gate
     WATCHDOG = conf.watchdog
+    user = conf.user
+    DB = skynet.uniqueservice("db")
 
+    local sql = string.format(sqlStr["Query_User_Info"],user)
+    local res = skynet.call(DB,"lua","query",sql)
+    if not res then
+        return false
+    end
+    userinfo = res[1]
+    dump(userinfo)
     skynet.call(gate, "lua", "forward", fd)
-
     netActive = os.time()
+
+    return true
 
 end
 function CMD.send(name,t )
@@ -71,9 +106,12 @@ end
 
 skynet.start(function()
     skynet.dispatch("lua", function(_,_, command, ...)
-        local f = CMD[command]
+        local f = assert(CMD[command])
         skynet.ret(skynet.pack(f(...)))
     end)
+
+
+    skynet.fork(mainloop)
 
 
     --register proto

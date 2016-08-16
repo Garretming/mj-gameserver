@@ -47,8 +47,8 @@ function SOCKET.data(fd, msg)
 	    if ret == "200" then
 	        local agent_pool = skynet.uniqueservice("agentPool")
 	        agent[fd] = skynet.call(agent_pool,"lua","fetch")
-	        skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self() })
-	        skynet.call(gamed,"lua","start",uid,fd)
+	        skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self(),user = uid })
+	        --skynet.call(gamed,"lua","start",uid,fd)
 	    end
 		checking[fd] = nil
 

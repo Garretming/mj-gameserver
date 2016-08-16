@@ -18,6 +18,7 @@ cpath = skynetroot.."cservice/?.so"
 lua_path = skynetroot.."lualib/?.lua;"..
            skynetroot.."lualib/?/init.lua;"..
            "./logic/?.lua;"..
+           "./gobal/?.lua;"..
            "./lualib/?.lua;"
 
            
@@ -29,11 +30,18 @@ luaservice = skynetroot.."service/?.lua;"..
              "service/?.lua;"..
              "./gameserver/?.lua;"..
              "./gameserver/room/?.lua;"..
+             "./gameserver/db/?.lua;"..
              "./gameserver/agent/?.lua;"
 
-preload = "./preload/preload.lua"
+preload = "./gobal/preload.lua"
 
 cluster = "./etc/clustername.lua"
 server_port = 8888
 debug_port = 8000
 nodename = "game"
+
+mysql_host = '127.0.0.1'
+mysql_port = 3306
+mysql_database = 'game'
+mysql_username = 'root'
+mysql_password = '123'
