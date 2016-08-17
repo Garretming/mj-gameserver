@@ -13,16 +13,17 @@ lualoader = skynetroot.."lualib/loader.lua"
 
 cpath = skynetroot.."cservice/?.so"
 
-lua_path = skynetroot.."lualib/?.lua;"..
-		   skynetroot.."lualib/?/init.lua;"..
-           "./gobal/?.lua;"..
-		   "./lualib/?.lua;"
+lua_path = "./gobal/?.lua;"..
+           "./lualib/?.lua;"..
+           skynetroot.."lualib/?.lua;"..
+		   skynetroot.."lualib/?/init.lua;"
+
 
 		   
-lua_cpath = skynetroot.."luaclib/?.so;"..
-			"./luaclib/?.so;"
-
-		   
+lua_cpath = "./luaclib/?.so;"..
+            skynetroot.."luaclib/?.so;"
+			
+   
 luaservice = skynetroot.."service/?.lua;"..
 			 skynetroot.."../loginserver/?.lua;"
 
