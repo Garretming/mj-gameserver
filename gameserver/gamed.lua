@@ -37,12 +37,16 @@ function CMD.auth(msg)
     local ret = "200"
     local user,index,hmac = string.match(msg,"([^:]*):([^:]*):([^:]*)")
     local uid, servername, subid = user:match "([^@]*)@([^#]*)#(.*)"
+    print("hamc===>",hmac)
+    print("uid===>",uid)
+
     hmac = b64decode(hmac)
     uid = b64decode(uid)
 
     local secret = handshake[uid]
     local text = string.format("%s:%s", user, index)
     local v = crypt.hmac_hash(secret, text) 
+
     if v ~= hmac then
         ret =  "401 Unauthorized"
     end

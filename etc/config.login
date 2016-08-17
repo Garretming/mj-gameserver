@@ -5,7 +5,7 @@ thread = 8
 logpath = "."
 harbor = 0
 start = "main"	-- main script
-daemon = "./skynet_login.pid"
+--daemon = "./skynet_login.pid"
 bootstrap = "snlua bootstrap"	-- The service for bootstrap
 
 
@@ -37,8 +37,8 @@ nodename = "login"
 httpserver_port = 7800
 
 
-mysql_host = '127.0.0.1'
+mysql_host = 'gs.7171game.com'
 mysql_port = 3306
 mysql_database = 'game'
-mysql_username = 'ciwo#i88kn_41.sd77*'
-mysql_password = '123'
+mysql_username = 'root'
+mysql_password = 'ciwo#i88kn_41.sd77*'
