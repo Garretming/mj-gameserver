@@ -1,3 +1,6 @@
+--重写自skynet/lualib/snax/loginserver.lua
+--1.加入验证失败处理
+
 local skynet = require "skynet"
 require "skynet.manager"
 local socket = require "socket"
