@@ -24,7 +24,8 @@ lua_cpath = "./luaclib/?.so;"..
             skynetroot.."luaclib/?.so;"
 			
    
-luaservice = skynetroot.."service/?.lua;"..
+luaservice = "service/?.lua;"..
+             skynetroot.."service/?.lua;"..
 			 skynetroot.."../loginserver/?.lua;"
 
 

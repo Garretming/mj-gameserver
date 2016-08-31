@@ -15,9 +15,9 @@ local watchdog = nil
 
 
 function CMD.login(uid,secret)
+    print("CMD.login")
     user_online[uid] = true
     handshake[uid] = secret
-    print("CMD.login")
     internal_id = internal_id + 1
     return internal_id
 end
@@ -70,7 +70,9 @@ skynet.start(function ( ... )
 
     --注册游戏服务器
     logind = cluster.query("login","logind")
-    cluster.call("login",logind,"register_gate","game",skynet.self())
+    local nodename = skynet.getenv("nodename")
+
+    cluster.call("login",logind,"register_gate",nodename,skynet.self())
 
 
 end)
