@@ -7,7 +7,7 @@ local dispatcher = require "agentDispatcher"
 local mysql = require "mysql"
 local sqlStr = require "sqlStr"
 
-
+require "player"
 
 local CMD = {}
 local client_fd
@@ -20,7 +20,6 @@ local dbDirty = false
 local clientDirty = false
 
 local core = {}
-local netActive = 0
 local lastHeartbeat = 0
 
 local sendByte = 0
@@ -32,22 +31,7 @@ function core:send( name,t )
     sendByte = sendByte + #package
 end
 function core:heartbeat( ... )
-    netActive = os.time()
-end
-
-
-function mainloop()
-    while(true) do
-        if dbDirty then
-            --save to db
-            dbDirty = false
-        end
-        if clientDirty then
-            --asyn to client
-            clientDirty = false
-        end
-        skynet.sleep(5)
-    end
+    
 end
 
 
@@ -65,6 +49,7 @@ skynet.register_protocol {
     end,
     dispatch = function (_, _, name,msg)
         local msg = pbc.decode(name,msg)
+        print("player===>",player)
         local ret = dispatcher.process(name,msg,core)
         if not ret then
             print("error in agentDispatcher",name)
@@ -83,16 +68,17 @@ function CMD.start(conf)
     user = conf.user
     DB = skynet.uniqueservice("db")
 
-    local sql = string.format(sqlStr["Query_User_Info"],user)
+    local sql = string.format(sqlStr["Query_User_Info"],mysql.quote_sql_str(user))
     local res = skynet.call(DB,"lua","query",sql)
     if not res then
         return false
     end
+    dump(res)
     userinfo = res[1]
-    dump(userinfo)
-    skynet.call(gate, "lua", "forward", fd)
-    netActive = os.time()
+    player = clsPlayer.new(userinfo,client_fd)
 
+    skynet.call(gate, "lua", "forward", fd)
+    
     return true
 
 end
@@ -109,10 +95,6 @@ skynet.start(function()
         local f = assert(CMD[command])
         skynet.ret(skynet.pack(f(...)))
     end)
-
-
-    skynet.fork(mainloop)
-
 
     --register proto
     local pbTable = {

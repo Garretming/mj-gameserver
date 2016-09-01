@@ -8,6 +8,14 @@ function CMD.query(...)
     if not db then
         return nil
     end
+    local res = db:query(...)
+    if not res then
+        return nil
+    end
+    if res.badresult then
+        skynet.logError(...,"sql query error",res.err)
+        return nil
+    end
     return db:query(...)
 end
 

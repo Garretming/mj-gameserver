@@ -12,6 +12,7 @@ skynet.start(function()
     local gamed = skynet.newservice("gamed")
 
     skynet.uniqueservice("roomMgr")
+
     local watchdog = skynet.newservice("watchdog")
     skynet.call(watchdog, "lua", "start", {
         port = skynet.getenv("server_port"),
@@ -21,5 +22,4 @@ skynet.start(function()
     })
     
     skynet.logInfo("Watchdog listen on ", skynet.getenv("server_port"))
-
 end)

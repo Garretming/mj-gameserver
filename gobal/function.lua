@@ -384,20 +384,23 @@ function skynet.logInfo( ... )
     for i=1,#t do
         t[i] = tostring(t[i])
     end
-    skynet.send(".logger","lua","info",table.concat(t," "))
+    local service_desc = SERVICE_DESC or SERVICE_NAME
+    skynet.send(".logger","lua","info",service_desc,table.concat(t," "))
 end
 function skynet.logWarning( ... )
     local t = {...}
     for i=1,#t do
         t[i] = tostring(t[i])
     end
-    skynet.send(".logger","lua","warning",table.concat(t," "))
+    local service_desc = SERVICE_DESC or SERVICE_NAME
+    skynet.send(".logger","lua","warning",service_desc,table.concat(t," "))
 end
 function skynet.logError( ... )
     local t = {...}
     for i=1,#t do
         t[i] = tostring(t[i])
     end
-    skynet.send(".logger","lua","error",table.concat(t," "))
+    local service_desc = SERVICE_DESC or SERVICE_NAME
+    skynet.send(".logger","lua","error",service_desc,table.concat(t," "))
 end
 

@@ -3,6 +3,8 @@ skynetroot = "./skynet/"
 
 thread = 8
 logpath = "."
+logger = "userlog"
+logservice = "snlua"
 harbor = 0
 start = "main"	-- main script
 --daemon = "./skynet_login.pid"
@@ -39,7 +41,7 @@ nodename = "login"
 httpserver_port = 7800
 
 
-mysql_host = 'gs.7171game.com'
+mysql_host = '139.129.33.151'
 mysql_port = 3306
 mysql_database = 'game'
 mysql_username = 'root'

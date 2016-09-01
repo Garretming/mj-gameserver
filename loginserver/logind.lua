@@ -41,13 +41,12 @@ function server.login_handler(server, uid, secret)
 	-- only one can login, because disallow multilogin
 	local last = user_online[uid]
 	if last then
-		cluster.call(last.address,gameserver,"kick",uid,last.subid)
+		cluster.call(last.server,last.address,"kick",uid,last.subid)
 	end
 	if user_online[uid] then
 		error(string.format("user %s is already online", uid))
 	end
 
---	local subid = tostring(skynet.call(gameserver, "lua", "login", uid, secret))
 	local subid = tostring(cluster.call(server,gameserver, "login", uid, secret))
 	user_online[uid] = { address = gameserver, subid = subid , server = server}
 	return subid
