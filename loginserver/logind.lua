@@ -24,9 +24,7 @@ function server.auth_handler(token)
 	server = crypt.base64decode(server)
 	password = crypt.base64decode(password)
 	local db = skynet.uniqueservice("db")
-	local sql = string.format(sqlStr["Query_User_Passwrod"]
-		,mysql.quote_sql_str(user))
-	local res = skynet.call(db,"lua","query",sql)
+	local res = skynet.call(db,"lua","query","Query_User_Passwrod",user)
 	if type(res) == 'table' and res[1] ~= nil and 
 		res[1].password == md5.sumhexa(password) then
 		return server,user

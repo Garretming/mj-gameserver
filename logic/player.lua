@@ -1,5 +1,6 @@
 local pbc = require "protobuf"
 local socket = require "socket"
+local skynet = require "skynet"
 
 clsPlayer = class('player')
 
@@ -17,7 +18,26 @@ function clsPlayer:send( name,t )
     return ret
 end
 
-function clsPlayer:heartbeat( ... )
-    -- body
+function clsPlayer:checklive()
+    self.alive = os.time()
+    while true do
+        skynet.sleep(500)
+        if not self:isAlive() then
+            self:logout()
+            return 
+        end
+        self:send("heartbeat",{})
+    end
 end
 
+function clsPlayer:setAlive()
+    self.alive = os.time()
+end
+
+function clsPlayer:isAlive( ... )
+    return os.time() - self.alive < 10
+end
+
+function clsPlayer:logout( ... )
+    skynet.exit()
+end

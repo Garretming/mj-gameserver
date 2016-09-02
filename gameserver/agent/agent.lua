@@ -15,25 +15,6 @@ local client_fd
 local WATCHDOG
 local DB
 local player
-local userinfo
-local dbDirty = false
-local clientDirty = false
-
-local core = {}
-local lastHeartbeat = 0
-
-local sendByte = 0
-function core:send( name,t )
-    local msg = pbc.encode(name,t)  
-    local buf = string.pack(">I2",#name)..name..string.char(0)..string.pack(">I2",#msg)..msg
-    local package = string.pack(">s2", buf)
-    local ret = socket.write(client_fd, package)
-    sendByte = sendByte + #package
-end
-function core:heartbeat( ... )
-    
-end
-
 
 skynet.register_protocol {
     name = "client",
@@ -49,8 +30,7 @@ skynet.register_protocol {
     end,
     dispatch = function (_, _, name,msg)
         local msg = pbc.decode(name,msg)
-        print("player===>",player)
-        local ret = dispatcher.process(name,msg,core)
+        local ret = dispatcher.process(name,msg,player)
         if not ret then
             print("error in agentDispatcher",name)
             skynet.exit()
@@ -68,22 +48,23 @@ function CMD.start(conf)
     user = conf.user
     DB = skynet.uniqueservice("db")
 
-    local sql = string.format(sqlStr["Query_User_Info"],mysql.quote_sql_str(user))
-    local res = skynet.call(DB,"lua","query",sql)
+    local res = skynet.call(DB,"lua","query","Query_User_Info",user)
     if not res then
         return false
     end
-    dump(res)
     userinfo = res[1]
     player = clsPlayer.new(userinfo,client_fd)
 
     skynet.call(gate, "lua", "forward", fd)
     
+    skynet.fork(function ( ... )
+        player:checklive()
+    end)
     return true
 
 end
 function CMD.send(name,t )
-    core:send(name,t)
+    player:send(name,t)
 end
 
 function CMD.disconnect()

@@ -1,22 +1,29 @@
 local skynet = require "skynet"
 local mysql = require "mysql"
+local sqlStr = require "sqlStr"
 
 local db = nil
 local CMD = {}
 
-function CMD.query(...)
-    if not db then
+function CMD.query(key,...)
+    local param = {...}
+    sql = sqlStr[key]
+    if not db or not sql then
         return nil
     end
-    local res = db:query(...)
+    for k,v in pairs(param) do
+        param[k] = mysql.quote_sql_str(v)
+    end
+    sql = string.format(sql,table.unpack(param))
+    local res = db:query(sql)
     if not res then
         return nil
     end
     if res.badresult then
-        skynet.logError(...,"sql query error",res.err)
+        skynet.logError(sql,"sql query error",res.err)
         return nil
     end
-    return db:query(...)
+    return res
 end
 
 
