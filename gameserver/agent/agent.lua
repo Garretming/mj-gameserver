@@ -4,9 +4,6 @@ local socket = require "socket"
 local pbc = require "protobuf"
 local dispatcher = require "agentDispatcher"
 
-local mysql = require "mysql"
-local sqlStr = require "sqlStr"
-
 require "player"
 
 local CMD = {}
