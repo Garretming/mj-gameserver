@@ -6,6 +6,7 @@ skynet.start(function()
     if debug_port ~= nil then
         skynet.newservice("debug_console",debug_port)
     end
+    skynet.uniqueservice("protoloader")
 
     cluster.open(skynet.getenv("nodename"))
 
@@ -22,4 +23,5 @@ skynet.start(function()
     })
     
     skynet.logInfo("Watchdog listen on ", skynet.getenv("server_port"))
+    
 end)

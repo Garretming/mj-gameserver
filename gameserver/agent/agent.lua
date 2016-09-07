@@ -3,12 +3,14 @@ local netpack = require "netpack"
 local socket = require "socket"
 local pbc = require "protobuf"
 local dispatcher = require "agentDispatcher"
+local sprotoloader = require "sprotoloader"
 
 require "player"
+local sp_host
+local sp_request
 
 local CMD = {}
 local client_fd
---other service
 local WATCHDOG
 local DB
 local player
@@ -17,16 +19,9 @@ skynet.register_protocol {
     name = "client",
     id = skynet.PTYPE_CLIENT,
     unpack = function (msg, sz)
-        msg = skynet.tostring(msg,sz)
-        local name_size = string.unpack(">I2",msg)
-        local name = string.sub(msg,3,name_size + 2)
-        local isCompress = string.sub(msg,name_size+3,1)
-        local msg_size = string.unpack(">I2",msg,name_size + 4)
-        local msg = string.sub(msg,name_size+6) 
-        return name,msg
+        return sp_host:dispatch(msg, sz)
     end,
-    dispatch = function (_, _, name,msg)
-        local msg = pbc.decode(name,msg)
+    dispatch = function (_, _, type, name, msg, response)
         local ret = dispatcher.process(name,msg,player)
         if not ret then
             print("error in agentDispatcher",name)
@@ -34,7 +29,6 @@ skynet.register_protocol {
         end
     end
 }
-
 
 function CMD.start(conf)
     local fd = conf.client
@@ -50,7 +44,7 @@ function CMD.start(conf)
         return false
     end
     userinfo = res[1]
-    player = clsPlayer.new(userinfo,client_fd)
+    player = clsPlayer.new(userinfo,client_fd,sp_request)
 
     skynet.call(gate, "lua", "forward", fd)
     
@@ -73,16 +67,8 @@ skynet.start(function()
         local f = assert(CMD[command])
         skynet.ret(skynet.pack(f(...)))
     end)
-
-    --register proto
-    local pbTable = {
-        "proto/heartbeat.proto.pb",
-        "proto/ddz.proto.pb",
-        "proto/room.proto.pb"
-    }
-    for _,v in ipairs(pbTable) do
-        pbc.register_file(v)
-    end
+    sp_host = sprotoloader.load(1):host "package"
+    sp_request = sp_host:attach(sprotoloader.load(2))
     
     --register handler
     require("roomHandler")

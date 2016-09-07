@@ -16,6 +16,7 @@ lualoader = skynetroot.."lualib/loader.lua"
 cpath = skynetroot.."cservice/?.so"
 
 lua_path =
+           "./?.lua;"..
            "./logic/?.lua;"..
            "./gobal/?.lua;"..
            "./lualib/?.lua;".. 

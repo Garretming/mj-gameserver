@@ -1,17 +1,29 @@
-local pbc = require "protobuf"
 local socket = require "socket"
 local skynet = require "skynet"
 
 clsPlayer = class('player')
 
-function clsPlayer:ctor(dbinfo,client_fd)
+function clsPlayer:ctor(dbinfo,client_fd,sp_request)
     dump(dbinfo)
+    assert(self.dbinfo == nil)
     self.client_fd = client_fd
+    self.dbinfo = dbinfo
+    self.session = 0
+    self.sp_request = sp_request
+    -- async to client
+    local msg = {}
+    msg = {
+        nickname = dbinfo.nickname,
+        gold = dbinfo.gold,
+        gem = dbinfo.gem,
+        mobilephone = dbinfo.mobilephone
+    }
+    self:send("loginFinish",msg)
+
 end
 
 function clsPlayer:send( name,t )
-    local msg = pbc.encode(name,t)  
-    local buf = string.pack(">I2",#name)..name..string.char(0)..string.pack(">I2",#msg)..msg
+    local buf = self.sp_request(name,t)
     local package = string.pack(">s2", buf)
     local ret = socket.write(self.client_fd, package)
 
@@ -26,7 +38,7 @@ function clsPlayer:checklive()
             self:logout()
             return 
         end
-        self:send("heartbeat",{})
+        self:send("heartbeat")
     end
 end
 

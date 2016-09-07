@@ -42,15 +42,15 @@ end
 
 function SOCKET.data(fd, msg)
 	if checking[fd] == true then
+		checking[fd] = nil
 		local ret,uid = skynet.call(gamed,"lua","auth",msg)
+		socket.write(fd,ret..'\n')
+		
 	    if ret == "200" then
 	        local agent_pool = skynet.uniqueservice("agentPool")
 	        agent[fd] = skynet.call(agent_pool,"lua","fetch")
 	        skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self(),user = uid })
 	    end
-		checking[fd] = nil
-
-		socket.write(fd,ret..'\n')
 
 	end
 end
