@@ -1,5 +1,6 @@
 local socket = require "socket"
 local skynet = require "skynet"
+local dispatcher = require "playerDispatcher"
 
 clsPlayer = class('player')
 
@@ -8,8 +9,9 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
     assert(self.dbinfo == nil)
     self.client_fd = client_fd
     self.dbinfo = dbinfo
-    self.session = 0
     self.sp_request = sp_request
+    self.session = 0
+    self.session2map = {}
     -- async to client
     local msg = {}
     msg = {
@@ -23,11 +25,14 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
 end
 
 function clsPlayer:send( name,t )
-    local buf = self.sp_request(name,t)
+    self.session = self.session + 1
+    self.session2map[self.session] = name
+
+    local buf = self.sp_request(name,t,self.session)
     local package = string.pack(">s2", buf)
     local ret = socket.write(self.client_fd, package)
 
-    return ret
+    return ret,self.session
 end
 
 function clsPlayer:checklive()
@@ -46,10 +51,20 @@ function clsPlayer:setAlive()
     self.alive = os.time()
 end
 
-function clsPlayer:isAlive( ... )
+function clsPlayer:isAlive()
     return os.time() - self.alive < 10
 end
 
-function clsPlayer:logout( ... )
+function clsPlayer:logout()
     skynet.exit()
+end
+
+function clsPlayer:dispatchMsg(type,...)
+    if type == "REQUEST" then
+        return dispatcher.process(self,type,...)
+    else
+        assert(type == "RESPONSE")
+        local seesion,t = ...
+        return dispatcher.process(self,type,self.session2map[seesion],t)
+    end
 end

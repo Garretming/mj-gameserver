@@ -1,8 +1,7 @@
 local skynet = require "skynet"
 local netpack = require "netpack"
 local socket = require "socket"
-local pbc = require "protobuf"
-local dispatcher = require "agentDispatcher"
+
 local sprotoloader = require "sprotoloader"
 
 require "player"
@@ -21,10 +20,10 @@ skynet.register_protocol {
     unpack = function (msg, sz)
         return sp_host:dispatch(msg, sz)
     end,
-    dispatch = function (_, _, type, name, msg, response)
-        local ret = dispatcher.process(name,msg,player)
+    dispatch = function (_, _, type,...)
+        local ret = player:dispatchMsg(type,...)
         if not ret then
-            print("error in agentDispatcher",name)
+            print("error in dispatchMsg",type,...)
             skynet.exit()
         end
     end
@@ -55,7 +54,7 @@ function CMD.start(conf)
 
 end
 function CMD.send(name,t )
-    player:send(name,t)
+    return player:send(name,t)
 end
 
 function CMD.disconnect()
