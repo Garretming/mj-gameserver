@@ -8,6 +8,13 @@ local proto_c2s = [[
 heartbeat 1 {}
 
 
+enterRoom 2 {
+    request {
+        type : string
+        id : integer
+    }
+}
+
 ]]
 
 
