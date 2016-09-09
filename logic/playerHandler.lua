@@ -5,7 +5,7 @@ local skynet = require "skynet"
 dispatcher.register("REQUEST","enterRoom",
     function ( player,msg,response)
         if core.room ~= nil then
-            return false
+            return true
         end
         local roomMgr = skynet.uniqueservice("roomMgr")
         local room = skynet.call(roomMgr,'lua','fetch',msg.type,msg.id)
@@ -20,7 +20,7 @@ dispatcher.register("REQUEST","enterRoom",
 
 dispatcher.register("REQUEST",leaveRoom,
     function ( player,msg,response)
-        
+
         local room = core.room
         if room then
             local ret = skynet.call(room,'lua','leave',skynet.self())

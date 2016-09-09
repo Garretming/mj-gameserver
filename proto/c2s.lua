@@ -10,8 +10,8 @@ heartbeat 1 {}
 
 enterRoom 2 {
     request {
-        type : string
-        id : integer
+        type 0 : string
+        id 1 : integer
     }
 }
 
