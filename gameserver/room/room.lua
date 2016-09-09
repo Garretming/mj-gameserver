@@ -39,7 +39,7 @@ skynet.start(function()
 end)
 
 local skynet = require "skynet"
-require("ddz.ddz")
+
 
 local CMD = {}
 local players = {}

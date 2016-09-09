@@ -13,6 +13,10 @@ enterRoom 2 {
         type 0 : string
         id 1 : integer
     }
+    response {
+        error 0 : string
+    }
+
 }
 
 ]]

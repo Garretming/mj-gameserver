@@ -1,6 +1,3 @@
 [submodule "skynet"]
 	path = skynet
 	url = https://github.com/cloudwu/skynet.git
-[submodule "skynet-mingw"]
-	path = skynet-mingw
-	url = https://github.com/dpull/skynet-mingw.git

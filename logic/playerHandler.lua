@@ -1,11 +1,11 @@
 
-local dispatcher = require "agentDispatcher"
+local dispatcher = require "playerDispatcher"
 local skynet = require "skynet"
 
 dispatcher.register("REQUEST","enterRoom",
-    function ( player,msg,response)
+    function ( player,msg)
         if core.room ~= nil then
-            return true
+            return true,{error = "you are already in room"}
         end
         local roomMgr = skynet.uniqueservice("roomMgr")
         local room = skynet.call(roomMgr,'lua','fetch',msg.type,msg.id)
@@ -15,16 +15,18 @@ dispatcher.register("REQUEST","enterRoom",
                 core.room = room
             end
         end
+        
         return true
     end)
 
 dispatcher.register("REQUEST",leaveRoom,
-    function ( player,msg,response)
-
+    function ( player,msg)
         local room = core.room
         if room then
             local ret = skynet.call(room,'lua','leave',skynet.self())
             core.room = nil
+        else
+            return true,{error = "you are not in room"}
         end
         return true
 

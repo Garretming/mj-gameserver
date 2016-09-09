@@ -20,11 +20,11 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
         gem = dbinfo.gem,
         mobilephone = dbinfo.mobilephone
     }
-    self:send("loginFinish",msg)
+    self:sendRequest("loginFinish",msg)
 
 end
 
-function clsPlayer:send( name,t )
+function clsPlayer:sendRequest( name,t )
     self.session = self.session + 1
     self.session2map[self.session] = name
 
@@ -43,7 +43,7 @@ function clsPlayer:checklive()
             self:logout()
             return 
         end
-        self:send("heartbeat")
+        self:sendRequest("heartbeat")
     end
 end
 
@@ -61,7 +61,13 @@ end
 
 function clsPlayer:dispatchMsg(type,...)
     if type == "REQUEST" then
-        return dispatcher.process(self,type,...)
+        local msg,response = ...
+        local ok,ret  = dispatcher.process(self,type,msg)
+        if ok and response  then
+            local package = string.pack(">s2", response(ret))
+            socket.write(self.client_fd, package)
+        end
+        return ok
     else
         assert(type == "RESPONSE")
         local seesion,t = ...

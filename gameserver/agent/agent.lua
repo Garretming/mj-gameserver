@@ -53,8 +53,8 @@ function CMD.start(conf)
     return true
 
 end
-function CMD.send(name,t )
-    return player:send(name,t)
+function CMD.sendRequest(name,t )
+    return player:sendRequest(name,t)
 end
 
 function CMD.disconnect()
@@ -69,9 +69,4 @@ skynet.start(function()
     sp_host = sprotoloader.load(1):host "package"
     sp_request = sp_host:attach(sprotoloader.load(2))
     
-    --register handler
-    require("roomHandler")
-    require("ddz.handler")
-
-
 end)
