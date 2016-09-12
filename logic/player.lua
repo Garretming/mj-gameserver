@@ -2,6 +2,8 @@ local socket = require "socket"
 local skynet = require "skynet"
 local dispatcher = require "playerDispatcher"
 
+local ALIVE_SECOND = 10
+
 clsPlayer = class('player')
 
 function clsPlayer:ctor(dbinfo,client_fd,sp_request)
@@ -24,17 +26,6 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
 
 end
 
-function clsPlayer:sendRequest( name,t )
-    self.session = self.session + 1
-    self.session2map[self.session] = name
-
-    local buf = self.sp_request(name,t,self.session)
-    local package = string.pack(">s2", buf)
-    local ret = socket.write(self.client_fd, package)
-
-    return ret,self.session
-end
-
 function clsPlayer:checklive()
     self.alive = os.time()
     while true do
@@ -52,8 +43,21 @@ function clsPlayer:setAlive()
 end
 
 function clsPlayer:isAlive()
-    return os.time() - self.alive < 10
+    return os.time() - self.alive < ALIVE_SECOND
 end
+
+
+function clsPlayer:sendRequest( name,t )
+    self.session = self.session + 1
+    self.session2map[self.session] = name
+
+    local buf = self.sp_request(name,t,self.session)
+    local package = string.pack(">s2", buf)
+    local ret = socket.write(self.client_fd, package)
+
+    return ret,self.session
+end
+
 
 function clsPlayer:logout()
     skynet.exit()
