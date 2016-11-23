@@ -42,7 +42,7 @@ function CMD.start(conf)
     if not res then
         return false
     end
-    userinfo = res[1]
+    userinfo = res[1] or {}
     player = clsPlayer.new(userinfo,client_fd,sp_request)
 
     skynet.call(gate, "lua", "forward", fd)

@@ -19,18 +19,18 @@ local user_login = {}
 
 function server.auth_handler(token)
 	-- the token is base64(user)@base64(server):base64(password)
-	local user, server, password = token:match("([^@]+)@([^:]+):(.+)")
-	user = crypt.base64decode(user)
+	local openid, server, _token = token:match("([^@]+)@([^:]+):(.+)")
+	openid = crypt.base64decode(openid)
 	server = crypt.base64decode(server)
-	password = crypt.base64decode(password)
-	local db = skynet.uniqueservice("db")
-	local res = skynet.call(db,"lua","query","Query_User_Passwrod",user)
-	if type(res) == 'table' and res[1] ~= nil and 
-		res[1].password == md5.sumhexa(password) then
-		return server,user
-	else
-		return nil,nil
-	end
+	_token = crypt.base64decode(_token)
+
+	print("login request")
+	print("server==>",server)
+	print("openid==>",openid)
+	print("token==>",_token)
+	--TODO
+	--check token
+	return server,openid
 end
 
 function server.login_handler(server, uid, secret)
