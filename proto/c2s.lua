@@ -7,39 +7,29 @@ local proto_c2s = [[
 
 heartbeat 1 {}
 
+.config {
+    type 0 : string
+    value 1 : integer
+}
 
-enterRoom 2 {
+createRoom 2 {
     request {
-        type 0 : string
-        id 1 : integer
-    }
-    response {
-        error 0 : string
+        majorType 0 : string
+        configs 1 : *config   
     }
 }
 
-
-leaveRoom 3 {
+joinRoom 3 {
     request {
-
-    }
-    response {
-        error 0 : string
+        roomid 0 : string
     }
 }
 
-#确认是否抢庄
-game_NN_banker 1000 {
+delRoom 4 {
     request {
-        check 0 : boolean
-    }
-    response {
-        error 0 : string
-    }
+
+    }   
 }
-
-
-
 ]]
 
 
