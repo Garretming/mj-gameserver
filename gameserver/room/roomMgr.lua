@@ -3,44 +3,35 @@ local skynet = require "skynet"
 local queue = require "skynet.queue"
 local rooms = {}
 local CMD = {}
-local roomID = 100000
+
+local BEGIN_ID = 100000
+local MAX_ID   = 999999
+local MAX_RETRY = 10000
+
+local roomID = BEGIN_ID
 local cs 
-function CMD.fetch(id )
-    return return rooms[id]
-end
 
 function CMD.create(type,configs)
-    local room = skynet.newservice("room")
-    cs(function()
-      local retryCount = 0
-      while rooms[roomID] ~= nil and retryCount < 10000 then
-        roomID = roomID + 1
-        if roomID > 999999 then
-          roomID = 100000
+  print("CMD.create",type,configs)
+  local room = skynet.newservice("room")
+  cs(function()
+        local retryCount = 0
+        while rooms[roomID] ~= nil and retryCount < MAX_RETRY do
+          roomID = roomID + 1
+          if roomID > MAX_ID then
+            roomID = BEGIN_ID
+          end
+          retryCount = retryCount + 1
         end
-        retryCount = retryCount + 1
-      end
-      if retryCount >= 10000 then
-         return nil
-      else
-         rooms[roomID] = room
-         return room
-      end
-    )
+        if retryCount >= MAX_RETRY then
+           return nil
+        else
+           rooms[roomID] = room
+           return room
+        end
+     end)
 end
 
-
-skynet.start(function()
-    skynet.dispatch("lua", function(_,_, command, ...)
-        local f = assert(CMD[command])
-        skynet.ret(skynet.pack(f(...)))
-    end)
-    cs = queue()
-end)
-
-local skynet = require "skynet"
-local rooms = {}
-local CMD = {}
 
 
 function CMD.fetch( type,id )
@@ -56,6 +47,6 @@ skynet.start(function()
         local f = CMD[command]
         skynet.ret(skynet.pack(f(...)))
     end)
-    
+    cs = queue()
 end)
 

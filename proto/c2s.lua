@@ -14,14 +14,20 @@ heartbeat 1 {}
 
 createRoom 2 {
     request {
-        majorType 0 : string
+        type 0 : string
         configs 1 : *config   
+    }
+    response {
+        errorCode 0 : integer
     }
 }
 
 joinRoom 3 {
     request {
-        roomid 0 : string
+        roomid 0 : integer
+    }
+    response {
+        errorCode 0 : integer
     }
 }
 
@@ -29,7 +35,45 @@ delRoom 4 {
     request {
 
     }   
+    response {
+        errorCode 0 : integer
+    }
 }
+
+leaveRoom 5 {
+    request {
+
+    }
+    response {
+        errorCode 0 : integer
+    }
+}
+
+discard 6 {
+    request {
+        index 0 : integer
+    }
+    response {
+        errorCode 1 : integer
+    }
+}
+
+peng 7 {
+    request {
+
+    }
+}
+
+chi 8 {
+    
+}
+
+hu 9 {
+    
+}
+
+
+
 ]]
 
 

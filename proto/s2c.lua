@@ -17,6 +17,13 @@ loginFinish 2 {
 }
 
 
+init 3 {
+	request {
+		card 0 : *integer
+	}
+}
+
+
 ]]
 
 

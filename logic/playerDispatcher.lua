@@ -9,14 +9,14 @@ function dispatcher.register(type,name, func)
     handlerT[type][name] = func
 end
 
-function dispatcher.process(player,type,name, msg,response)
+function dispatcher.process(player,type,name, msg)
     handlerT[type] = handlerT[type] or {}
 
     if not handlerT[type][name] then
         print("cann't find handler",type,name)
         return false;
     else
-        return handlerT[type][name](player,msg,response)
+        return handlerT[type][name](player,msg)
     end
 end
 

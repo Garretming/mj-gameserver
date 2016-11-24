@@ -21,6 +21,7 @@ skynet.register_protocol {
         return sp_host:dispatch(msg, sz)
     end,
     dispatch = function (_, _, type,...)
+        print("dispatch",type,...)
         local ret = player:dispatchMsg(type,...)
         if not ret then
             print("error in dispatchMsg",type,...)

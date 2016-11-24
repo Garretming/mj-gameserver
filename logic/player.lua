@@ -1,7 +1,7 @@
 local socket = require "socket"
 local skynet = require "skynet"
 local dispatcher = require "playerDispatcher"
-
+require "playerHandler"
 local ALIVE_SECOND = 10
 
 clsPlayer = class('player')
@@ -65,8 +65,8 @@ end
 
 function clsPlayer:dispatchMsg(type,...)
     if type == "REQUEST" then
-        local msg,response = ...
-        local ok,ret  = dispatcher.process(self,type,msg)
+        local name,msg,response = ...
+        local ok,ret  = dispatcher.process(self,type,name,msg)
         if ok and response  then
             local package = string.pack(">s2", response(ret))
             socket.write(self.client_fd, package)
