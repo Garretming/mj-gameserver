@@ -4,9 +4,16 @@ local skynet = require "skynet"
 local CMD = {}
 local players = {}
 local game = nil
+local size = 0
+local configs =  nil
 
-function CMD.enter( agent )
+
+function CMD.join( agent )
     players[agent] = agent
+    size = size + 1
+    if configs.size == size then
+        
+    end
     return true
 end
 
@@ -16,10 +23,10 @@ function CMD.leave( agent )
     end
 end
 
-function CMD.debugInfo( cmd )
-    if cmd == "size" then
-        return table.nums(players)
-    end
+
+function CMD.init( roomid,type,configs)
+    configs = configs
+    return true
 end
 
 skynet.start(function()

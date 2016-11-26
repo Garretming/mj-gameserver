@@ -4,7 +4,7 @@ local dispatcher = require "playerDispatcher"
 require "playerHandler"
 local ALIVE_SECOND = 10
 
-clsPlayer = class('player')
+clsPlayer = class('clsplayer')
 
 function clsPlayer:ctor(dbinfo,client_fd,sp_request)
     dump(dbinfo)
