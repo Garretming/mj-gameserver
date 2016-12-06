@@ -65,6 +65,10 @@ function CMD.leaveRoom( ... )
     player.room = nil
 end
 
+function CMD.getPlayerID()
+    return player:getID()
+end
+
 skynet.start(function()
     skynet.dispatch("lua", function(_,_, command, ...)
         local f = assert(CMD[command])

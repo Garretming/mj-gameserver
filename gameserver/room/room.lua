@@ -7,6 +7,7 @@ local game = nil
 local size = 0
 local config =  nil
 local id = nil
+local master = nil
 
 function CMD.join( agent )
     if configs.size == size then
@@ -52,13 +53,15 @@ function CMD.init(agent,mroomid,type,config)
     if type == 'qzmj' then
         players[agent] = agent
         size = size + 1
-
         id = roomid
         config = config
+        master = skynet.call(agent,"lua","getPlayerID")
         require "mj.qzmj"
         game = clsQZMJ.new()
         local ret = game:init(config) 
         print("game==>",game,ret)
+
+
         return ret
     end
 

@@ -20,7 +20,7 @@ dispatcher.register("REQUEST","createRoom",
 dispatcher.register("REQUEST","joinRoom",
     function ( player,msg)
         if player.room ~= nil then
-            return true,{errorCode = 10003}
+            return true,{errorCode = 10000}
         end
         local roomMgr = skynet.uniqueservice("roomMgr")
         local room = skynet.call(roomMgr,'lua','get',msg.roomid)

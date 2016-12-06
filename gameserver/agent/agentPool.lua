@@ -2,7 +2,7 @@
 
 local skynet = require "skynet"
 local CMD = {}
-local AGENT_IDLE_COUNT = 1
+local AGENT_IDLE_COUNT = 0
 local agent_pool = {}
 function CMD.fetch()
     if #agent_pool == 0 then

@@ -19,6 +19,7 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
         nickname = dbinfo.nickname,
         gold = dbinfo.gold,
         gem = dbinfo.gem,
+        room = dbinfo.room,
         mobilephone = dbinfo.mobilephone
     }
     self:sendRequest("loginFinish",msg)
@@ -43,6 +44,10 @@ end
 
 function clsPlayer:isAlive()
     return os.time() - self.alive < ALIVE_SECOND
+end
+
+function clsPlayer:getID( ... )
+    return self.dbinfo.id
 end
 
 
