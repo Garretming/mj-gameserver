@@ -9,16 +9,10 @@ dispatcher.register("REQUEST","createRoom",
             return true,{errorCode = 10000}
         end
         local roomMgr = skynet.uniqueservice("roomMgr")
-        local room = skynet.call(roomMgr,'lua','create',msg.type,msg.configs)   
+        local room = skynet.call(roomMgr,'lua','create',skynet.self(),msg.type,msg.configs)   
         if room == nil then
             return true,{errorCode = 10001}
         else
-            local ret = skynet.call(room,'lua','enter',skynet.self())
-            if ret == true then
-                player.room = room
-            else
-                return true,{errorCode = 10002}
-            end
             return true,{errorCode = 0}
         end     
     end)
@@ -56,3 +50,17 @@ dispatcher.register("REQUEST","leaveRoom",
         return true,{errorCode = 0}
     end)
 
+dispatcher.register("REQUEST","delRoom",
+    function (player,msg)
+        if player.room == nil then
+            return true,{errorCode = 10006}
+        end
+        local id = skynet.call(player.room,"lua","getID")
+        local roomMgr = skynet.uniqueservice("roomMgr")
+        skynet.call(roomMgr,'lua','del',id)
+
+        assert(player.room == nil)
+
+
+        return true,{errorCode = 0}
+    end)

@@ -16,12 +16,32 @@ loginFinish 2 {
     }
 }
 
-
-init 3 {
-	request {
-		card 0 : *integer
-	}
+.Player {
+    name 1 : string
+    id 2 : integer
+    posiont 3 : integer
 }
+
+roomInfo 3 {
+    request {
+        players 0 : *Player
+    }
+}
+
+playerJoinRoom 4 {
+    request {
+        id 0 : integer
+    }
+}
+
+playerLeaveRoom 5 {
+    request {
+        id 0 : integer
+    }
+}
+
+
+
 
 
 ]]

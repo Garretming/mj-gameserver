@@ -11,8 +11,8 @@ local MAX_RETRY = 1000
 local roomID = math.random(MIN_ID,MAX_ID)
 local cs 
 
-function CMD.create(type,configs)
-  cs(function()
+function CMD.create(agent,type,configs)
+  return cs(function()
         local retryCount = 0
         while rooms[roomID] ~= nil and retryCount < MAX_RETRY do
           roomID = math.random(MIN_ID,MAX_ID)
@@ -23,7 +23,7 @@ function CMD.create(type,configs)
         else
            local room = skynet.newservice("room")
            rooms[roomID] = room
-           if not skynet.call(room,"lua","init",roomID,type,configs) then
+           if not skynet.call(room,"lua","init",agent,roomID,type,configs) then
               return nil
            end
            return room
@@ -32,9 +32,19 @@ function CMD.create(type,configs)
 end
 
 function CMD.get(id )
-    return rooms[id]
+  return rooms[id]
 end
 
+
+function CMD.del(id)
+  cs(function ( ... )
+      if rooms[id] ~= nil then
+        local room = rooms[id]
+        skynet.call(room,"lua","destory")
+        rooms[id] = nil
+      end
+  end)
+end
 
 skynet.start(function()
     skynet.dispatch("lua", function(_,_, command, ...)

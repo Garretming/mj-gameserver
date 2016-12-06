@@ -7,7 +7,6 @@ local ALIVE_SECOND = 10
 clsPlayer = class('clsplayer')
 
 function clsPlayer:ctor(dbinfo,client_fd,sp_request)
-    dump(dbinfo)
     assert(self.dbinfo == nil)
     self.client_fd = client_fd
     self.dbinfo = dbinfo
@@ -67,8 +66,10 @@ function clsPlayer:dispatchMsg(type,...)
     if type == "REQUEST" then
         local name,msg,response = ...
         local ok,ret  = dispatcher.process(self,type,name,msg)
-        if ok and response  then
+        if ok and response and ret then
             local package = string.pack(">s2", response(ret))
+            dump(ret)
+            print("response",ret,#package)
             socket.write(self.client_fd, package)
         end
         return ok
