@@ -2,7 +2,7 @@
 local dispatcher = require "playerDispatcher"
 local skynet = require "skynet"
 
-dispatcher.register("REQUEST","createRoom",
+dispatcher.register("createRoom",
     function (player,msg)
         local errorCode = 0
         if player.room ~= nil then
@@ -13,11 +13,12 @@ dispatcher.register("REQUEST","createRoom",
         if room == nil then
             return true,{errorCode = 10001}
         else
+            player.room = room
             return true,{errorCode = 0}
         end     
     end)
 
-dispatcher.register("REQUEST","joinRoom",
+dispatcher.register("joinRoom",
     function ( player,msg)
         if player.room ~= nil then
             return true,{errorCode = 10000}
@@ -39,7 +40,7 @@ dispatcher.register("REQUEST","joinRoom",
     end)
 
 
-dispatcher.register("REQUEST","leaveRoom",
+dispatcher.register("leaveRoom",
     function (player,msg)
         if player.room == nil then
             return true,{errorCode = 10006}
@@ -50,7 +51,7 @@ dispatcher.register("REQUEST","leaveRoom",
         return true,{errorCode = 0}
     end)
 
-dispatcher.register("REQUEST","delRoom",
+dispatcher.register("delRoom",
     function (player,msg)
         if player.room == nil then
             return true,{errorCode = 10006}

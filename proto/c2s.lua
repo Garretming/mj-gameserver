@@ -5,6 +5,9 @@ local proto_c2s = [[
     session 1 : integer
 }
 
+kick 100 {
+    
+}
 heartbeat 1 {}
 
 .config {

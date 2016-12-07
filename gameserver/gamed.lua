@@ -23,9 +23,9 @@ function CMD.login(uid,secret)
 end
 
 function CMD.kick(uid,subid)
-    print("CMD.kick")
+    print("CMD.kick",user_online[uid],type(user_online[uid]))
     if type(user_online[uid]) == "number" then
-        close_agent(user_online[uid])
+        skynet.call(watchdog,"lua","close",user_online[uid])
         print("close_agent",user_online[uid])
     end
     user_online[uid] = false

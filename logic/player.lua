@@ -4,7 +4,7 @@ local dispatcher = require "playerDispatcher"
 require "playerHandler"
 local ALIVE_SECOND = 10
 
-clsPlayer = class('clsplayer')
+clsPlayer = class('clsPlayer')
 
 function clsPlayer:ctor(dbinfo,client_fd,sp_request)
     assert(self.dbinfo == nil)
@@ -12,7 +12,7 @@ function clsPlayer:ctor(dbinfo,client_fd,sp_request)
     self.dbinfo = dbinfo
     self.sp_request = sp_request
     self.session = 0
-    self.session2map = {}
+    self.seesion2response = {}
     -- async to client
     local msg = {}
     msg = {
@@ -51,15 +51,20 @@ function clsPlayer:getID( ... )
 end
 
 
-function clsPlayer:sendRequest( name,t )
-    self.session = self.session + 1
-    self.session2map[self.session] = name
-
-    local buf = self.sp_request(name,t,self.session)
+function clsPlayer:sendRequest( name,t,responseHandler)
+    local buf = nil 
+    if responseHandler then
+        self.session = self.session + 1
+        self.seesion2response[self.session] = responseHandler
+        buf = self.sp_request(name,t,self.session)
+    else
+        buf = self.sp_request(name,t)
+    end
+    
     local package = string.pack(">s2", buf)
     local ret = socket.write(self.client_fd, package)
 
-    return ret,self.session
+    return ret
 end
 
 
@@ -67,10 +72,14 @@ function clsPlayer:logout()
     skynet.exit()
 end
 
+function clsPlayer:setRoom(room)
+    self.room = room
+end
+
 function clsPlayer:dispatchMsg(type,...)
     if type == "REQUEST" then
         local name,msg,response = ...
-        local ok,ret  = dispatcher.process(self,type,name,msg)
+        local ok,ret  = dispatcher.process(self,name,msg)
         if ok and response and ret then
             local package = string.pack(">s2", response(ret))
             dump(ret)
@@ -80,7 +89,10 @@ function clsPlayer:dispatchMsg(type,...)
         return ok
     else
         assert(type == "RESPONSE")
-        local seesion,t = ...
-        return dispatcher.process(self,type,self.session2map[seesion],t)
+        local seesion,msg = ...
+        local handler = seesion2response[seesion]
+        if handler then
+            handler(self,msg)
+        end
     end
 end

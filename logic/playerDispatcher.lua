@@ -1,27 +1,24 @@
 local dispatcher = {}
 local handlerT = {}
-function dispatcher.register(type,name, func)
-    handlerT[type] = handlerT[type] or {}
+function dispatcher.register(name, func)
 
-    if handlerT[type][name] ~= nil then
+    if handlerT[name] ~= nil then
         print("dispatcher:register error ,has registered", name)
     end
-    handlerT[type][name] = func
+    handlerT[name] = func
 end
 
-function dispatcher.process(player,type,name, msg)
-    handlerT[type] = handlerT[type] or {}
-
-    if not handlerT[type][name] then
-        print("cann't find handler",type,name)
+function dispatcher.process(player,name, msg)
+    if not handlerT[name] then
+        print("cann't find handler",name)
         return false;
     else
-        return handlerT[type][name](player,msg)
+        return handlerT[name](player,msg)
     end
 end
 
 
-dispatcher.register("REQUEST","heartbeat",
+dispatcher.register("heartbeat",
     function (player)
         player:setAlive()
         return true;

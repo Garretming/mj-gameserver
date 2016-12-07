@@ -49,6 +49,7 @@ function SOCKET.data(fd, msg)
 	    if ret == "200" then
 	        local agent_pool = skynet.uniqueservice("agentPool")
 	        agent[fd] = skynet.call(agent_pool,"lua","fetch")
+	        skynet.call(gamed,"lua","open",uid,fd)
 	        skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self(),user = uid })
 	    end
 
@@ -62,6 +63,14 @@ function CMD.start(conf)
 	skynet.call(gamed,"lua","start",skynet.self())
 end
 function CMD.close(fd)
+	close_agent(fd)
+end
+
+function CMD.kick(fd,reason)
+	local a = agent[fd]
+    if a then
+        skynet.call(a, "lua", "kick",reason)
+    end
 	close_agent(fd)
 end
 

@@ -68,6 +68,10 @@ end
 function CMD.getPlayerID()
     return player:getID()
 end
+function CMD.kick(reason)
+    -- body
+end
+
 
 skynet.start(function()
     skynet.dispatch("lua", function(_,_, command, ...)
